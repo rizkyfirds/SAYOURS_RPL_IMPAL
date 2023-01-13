@@ -7,20 +7,35 @@ session_start();
 
 if (isset($_POST['register'])) {
     $name = filter_input(INPUT_POST, 'name');
+    $username = filter_input(INPUT_POST, 'username');
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
     $password = $_POST["password"];
     $confirm_password = $_POST["confirm_password"];
-    if($password != $confirm_password){
-        echo "<script>alert('Password dengan Confirm Password berbeda!')</script>";
-        header("Location: register.php");
-    }
+    if ($name != null && $username != null && $email != null && $password != null){
+        if($password != $confirm_password){
+            echo "<script>alert('Password dengan Confirm Password berbeda!')</script>";
+            header("Location: register.php");
+        }
 
-    $sql="INSERT INTO user (name, email, password) VALUES ('$name', '$email','$password')";
-    if (mysqli_query($db, $sql)) {
-        header("Location: dashboard.php");
-    } else {
-        echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+        $query = mysqli_query($db,"SELECT max(userID) FROM user" );
+        $data = mysqli_fetch_array($query);
+        $id = $data['max(userID)'];
+        $idint = (int)substr($id,0,10);
+        $idint++;
+        $id = sprintf("%03s",$idint);
+
+        $sql="INSERT INTO user (userID, name, username,email, password) VALUES ('$id','$name', '$username','$email','$password')";
+        if (mysqli_query($db, $sql)) {
+            $_SESSION["username"] = $username;
+            header("Location: dashboard.php");
+        }else {
+            echo "Error: " . $sql . "<br>" . mysqli_error($db);
+        }
+    }else{
+        //echo "<script>alert('Masukkan data secara lengkap!')</script>";
+        header("Location: register.php?alert=Masukkan data secara lengkap!");
     }
+    
 }
 
 ?>
@@ -68,6 +83,9 @@ if (isset($_POST['register'])) {
                                 </div>
                                 <div class='w-center'>
                                     <input name="name" type="text" class='px-10 text-center bg-violet-100/10 rounded-lg m-2 text-white' placeholder='Name' />
+                                </div>
+                                <div>
+                                    <input name="username" type="text" class='px-10 text-center bg-violet-100/10 rounded-lg m-2 text-white' placeholder='Username' />
                                 </div>
                                 <div>
                                     <input name="email" type="text" class='px-10 text-center bg-violet-100/10 rounded-lg m-2 text-white' placeholder='Email Address' />

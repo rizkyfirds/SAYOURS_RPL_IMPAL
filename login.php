@@ -13,7 +13,7 @@ if (isset($_POST['login'])) {
   $result = mysqli_query($db, $sql);
   if ($result->num_rows > 0) {
     $row = mysqli_fetch_assoc($result);
-    $_SESSION['username'] = $row['username'];
+    $_SESSION["username"] = $row['username'];
     header("Location: dashboard.php");
   } else {
     echo "<script>alert('Email atau password Anda salah. Silahkan coba lagi!')</script>";
